@@ -7,9 +7,16 @@ import jakarta.persistence.Id;
 
 @Entity
 public class User {
+
+    public static enum UserType {
+        USER,
+        ADMIN
+    }
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    private UserType type;
 
     private String firstname;
     private String lastname;
@@ -22,7 +29,32 @@ public class User {
 
     private String city;
 
-    // Full address getter
+    public User() {}
+
+    public User(UserType type, String firstname, String lastname, String email, String streetAddress, Integer postCode, String city) {
+        this.type = type;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.streetAddress = streetAddress;
+        this.postCode = postCode;
+        this.city = city;
+    }
+
+    public Integer getID() {
+        return id;
+    }
+
+    // Access type getter and setter
+    public UserType getType() {
+        return type;
+    }
+
+    public void setType(UserType type) {
+        this.type = type;
+    }
+
+    // Full address getter, derived from address related fields
     public String getFullAddress() {
         return String.format("%s, %s %s", streetAddress, postCode, city);
     }
