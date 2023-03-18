@@ -1,13 +1,13 @@
-package edu.ntnu.jakobkg.IDATT2105projbackend;
+package edu.ntnu.jakobkg.idatt2105projbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Idatt2105ProjBackendApplication {
+public class idatt2105ProjBackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Idatt2105ProjBackendApplication.class, args);
+		SpringApplication.run(idatt2105ProjBackendApplication.class, args);
 	}
 
 }
