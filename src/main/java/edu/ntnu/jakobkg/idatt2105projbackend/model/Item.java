@@ -19,6 +19,7 @@ public class Item {
     private String price;
     private int categoryID;
     private String images;
+    private int userID;
 
     public String getTitle() {
         return title;
@@ -82,5 +83,9 @@ public class Item {
 
     public void setImages(String images) {
         this.images = images;
+    }
+
+    public int getUserID() {
+        return userID;
     }
 }
