@@ -36,6 +36,7 @@ jobs:
       with:
         context: ./database
         file: "./database/Dockerfile"
+        tags: database:latest
         cache-from: type=gha
         cache-to: type=gha
     
