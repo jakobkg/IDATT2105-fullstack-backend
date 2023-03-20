@@ -27,6 +27,13 @@ jobs:
         java-version: '17'
         distribution: 'oracle'
         cache: maven
+      
+    - name: Build database image
+      run: docker build database --tag database
+    
+    - name: Start database service
+      run: docker run -d -p 3306:3306 latest
+      
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     
