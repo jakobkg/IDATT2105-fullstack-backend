@@ -8,22 +8,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import edu.ntnu.jakobkg.idatt2105projbackend.model.User;
-import edu.ntnu.jakobkg.idatt2105projbackend.model.User.UserType;
 import edu.ntnu.jakobkg.idatt2105projbackend.repo.UserRepository;
 
 @Controller
-@RequestMapping(path = "/users")
+@RequestMapping(path = "/user")
 public class UserController {
     @Autowired
     private UserRepository userRepo;
 
-    @PostMapping(path = "/add")
+    @PostMapping(path = "")
     @ResponseStatus(code = HttpStatus.CREATED)
     public @ResponseBody String addUser(
         @RequestParam String firstname, 
@@ -34,7 +34,6 @@ public class UserController {
         @RequestParam String city) {
             
         User newUser = new User(
-            UserType.USER,
             firstname,
             lastname,
             email,
@@ -47,17 +46,13 @@ public class UserController {
         return "OK";
     }
 
-    /**
-     * @param id
-     * @param firstname
-     * @param lastname
-     * @param email
-     * @param streetAddress
-     * @param postCode
-     * @param city
-     * @return
-     */
-    @PostMapping(path = "/update/{id}")
+    @GetMapping(path = "/{id}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public @ResponseBody User getUser(@PathVariable Integer id) {
+        return userRepo.findById(id).orElseThrow();
+    }
+
+    @PutMapping(path = "/{id}")
     @ResponseStatus(code = HttpStatus.OK)
     public @ResponseBody String updateUser(@PathVariable Integer id,
         @RequestParam(required = false) String firstname,
