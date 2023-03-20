@@ -28,8 +28,13 @@ jobs:
         distribution: 'oracle'
         cache: maven
       
-    - name: Build database image
-      run: docker build database --tag database
+    - name: Build Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: "./database/Dockerfile"
+        cache-from: type=gha
+        cache-to: type=gha
     
     - name: Start database service
       run: docker run -d -p 3306:3306 database:latest
