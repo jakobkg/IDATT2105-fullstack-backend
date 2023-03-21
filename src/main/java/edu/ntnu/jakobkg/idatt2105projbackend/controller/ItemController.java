@@ -20,6 +20,7 @@ public class ItemController {
     final int pageNum = 24;
 
     @PostMapping(path = "")
+    @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody Item add(
             @RequestParam String title,
             @RequestParam String description,
@@ -74,27 +75,30 @@ public class ItemController {
     }
 
     @GetMapping(path = "")
-    public Iterable<Item> getAll(@PathVariable int page) {
+    public Iterable<Item> getMultiple(@RequestParam int page, @RequestParam(defaultValue="-1") int categoryId) {
         page--; //zero-indexing on pages
-        return itemRepo.findAll(PageRequest.of(page, this.pageNum));
+
+        //get based on category id
+        if (categoryId < 0) {
+            return itemRepo.findAll(PageRequest.of(page, this.pageNum)).stream().filter(i->i.getCategoryID() == categoryId).toList();
+        // get all
+        } else {
+            return itemRepo.findAll(PageRequest.of(page, this.pageNum));
+        }
     }
 
     @GetMapping(path = "/{id}")
-    public @ResponseBody Item get(@PathVariable int id) {
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody Item get(@RequestParam int id) {
         return itemRepo.findById(id).orElseThrow(()-> {
             logger.warn("No item found.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
     }
 
-    @GetMapping(path = "")
-    public Iterable<Item> getAllBasedOnCategory(@PathVariable int categoryId, @PathVariable int page) {
-        page--; //zero-indexing on pages
-        return itemRepo.findAll(PageRequest.of(page, this.pageNum)).stream().filter(i->i.getCategoryID() == categoryId).toList();
-    }
-
     @DeleteMapping(path = "/{id}")
-    public @ResponseBody void delete(@PathVariable int id) {
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody void delete(@RequestParam int id) {
         itemRepo.deleteById(id);
     }
 
