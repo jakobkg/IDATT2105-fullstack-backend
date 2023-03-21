@@ -21,6 +21,22 @@ public class Item {
     private String images;
     private int userID;
 
+    public Item(String title, String description, String date, String latitude, String longitude, String price, int categoryID, String images, int userID) {
+        this.title = title;
+        this.description = description;
+        this.date = date;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.price = price;
+        this.categoryID = categoryID;
+        this.images = images;
+        this.userID = userID;
+    }
+
+    public Item() {
+
+    }
+
     public String getTitle() {
         return title;
     }
