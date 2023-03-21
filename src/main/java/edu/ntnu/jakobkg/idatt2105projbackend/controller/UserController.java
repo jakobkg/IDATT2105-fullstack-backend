@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import edu.ntnu.jakobkg.idatt2105projbackend.helper.TokenHelper;
 import edu.ntnu.jakobkg.idatt2105projbackend.model.AddUserRequest;
 import edu.ntnu.jakobkg.idatt2105projbackend.model.User;
 import edu.ntnu.jakobkg.idatt2105projbackend.model.User.UserType;
@@ -78,7 +77,13 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.OK)
     public @ResponseBody String updateUser(@PathVariable Integer id,
             @RequestBody AddUserRequest request) {
-    
+
+        User authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (authenticatedUser.getId() != id || authenticatedUser.getType() != UserType.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
         User user = userRepo.findById(id).orElseThrow(() -> {
             return new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
@@ -124,5 +129,21 @@ public class UserController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "24") Integer perPage) {
         return userRepo.findAll(PageRequest.of(page, perPage)).toList();
+    }
+
+    @PutMapping(path = "admin/{id}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public void setAdmin(@PathVariable Integer id, @RequestBody Boolean status) {
+        User user = userRepo.findById(id).orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND);
+        });
+
+        if (status) {
+            user.setType(UserType.ADMIN);
+        } else {
+            user.setType(UserType.USER);
+        }
+
+        userRepo.save(user);
     }
 }

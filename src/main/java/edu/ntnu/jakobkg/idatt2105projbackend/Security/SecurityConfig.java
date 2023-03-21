@@ -37,6 +37,8 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/user").permitAll()
                     .requestMatchers(HttpMethod.POST, "/user").permitAll()
                     .requestMatchers(HttpMethod.DELETE, "/user").authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/user").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/user/admin*").hasAuthority("ROLE_ADMIN")
                     .anyRequest().authenticated().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilterBefore(new AuthFilter(), UsernamePasswordAuthenticationFilter.class);
