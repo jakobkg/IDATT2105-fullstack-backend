@@ -1,6 +1,8 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.model;
 
-import java.security.Principal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,8 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-public class User {
-    Principal principal;
+public class UserModel {
 
     public static enum UserType {
         USER,
@@ -33,6 +34,11 @@ public class User {
 
     @Getter
     @Setter
+    @JsonIgnore
+    private String password;
+
+    @Getter
+    @Setter
     private String lastname;
 
     @Getter
@@ -51,15 +57,16 @@ public class User {
     @Setter
     private String city;
 
-    public User() {
+    public UserModel() {
     }
 
-    public User(String firstname, String lastname, String email, String streetAddress, Integer postCode,
+    public UserModel(String firstname, String lastname, String email, String password, String streetAddress, Integer postCode,
             String city) {
         this.type = UserType.USER;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
+        this.password = new BCryptPasswordEncoder().encode(password);
         this.streetAddress = streetAddress;
         this.postCode = postCode;
         this.city = city;

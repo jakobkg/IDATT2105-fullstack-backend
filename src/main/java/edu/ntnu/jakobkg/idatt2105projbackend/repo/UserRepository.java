@@ -1,7 +1,11 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.repo;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.Optional;
 
-import edu.ntnu.jakobkg.idatt2105projbackend.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends CrudRepository<User, Integer> {}
+import edu.ntnu.jakobkg.idatt2105projbackend.model.UserModel;
+
+public interface UserRepository extends JpaRepository<UserModel, Integer> {
+    Optional<UserModel> findByEmail(String email);
+}
