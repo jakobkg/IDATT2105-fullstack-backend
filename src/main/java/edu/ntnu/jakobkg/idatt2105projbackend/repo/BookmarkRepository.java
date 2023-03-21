@@ -11,7 +11,7 @@ import java.util.List;
 public interface BookmarkRepository extends JpaRepository<Bookmark, BookmarkId> {
 
     // Returns a list of bookmarks saved by a specified user..?
-    List<Bookmark> findByBookmarkIdUserId(String userId);
+    List<Bookmark> findByBookmarkIdUserId(int userId);
 
 
 
