@@ -20,28 +20,18 @@ public class ItemController {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public @ResponseBody Item add(
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam String date,
-            @RequestParam String latitude,
-            @RequestParam String longitude,
-            @RequestParam String price,
-            @RequestParam int categoryId,
-            @RequestParam String images,
-            @RequestParam int userId) {
+    public @ResponseBody Item add(@RequestBody Item item) {
 
         Item newItem = new Item(
-                title,
-                description,
-                date,
-                latitude,
-                longitude,
-                price,
-                categoryId,
-                images,
-                userId);
-
+                item.getTitle(),
+                item.getDescription(),
+                item.getDate(),
+                item.getLatitude(),
+                item.getLongitude(),
+                item.getPrice(),
+                item.getCategoryID(),
+                item.getImages(),
+                item.getUserID());
         return itemRepo.save(newItem);
     }
 
