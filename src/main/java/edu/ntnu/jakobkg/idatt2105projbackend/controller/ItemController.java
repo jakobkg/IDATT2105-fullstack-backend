@@ -7,11 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-@Controller
+@RestController
 @RequestMapping(path = "/item")
 public class ItemController {
     @Autowired
@@ -19,7 +18,7 @@ public class ItemController {
     Logger logger = LoggerFactory.getLogger(ItemController.class);
     final int pageNum = 24;
 
-    @PostMapping(path = "")
+    @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody Item add(
             @RequestParam String title,
@@ -46,7 +45,7 @@ public class ItemController {
         return itemRepo.save(newItem);
     }
 
-    @PutMapping(path = "/{id}")
+    @PutMapping("/{id}")
     public @ResponseBody Item update(
             @PathVariable Integer id,
             @RequestParam String title,
@@ -74,7 +73,7 @@ public class ItemController {
         return itemRepo.save(newItem);
     }
 
-    @GetMapping(path = "")
+    @GetMapping("")
     public Iterable<Item> getMultiple(@RequestParam int page, @RequestParam(defaultValue="-1") int categoryId) {
         page--; //zero-indexing on pages
 
@@ -87,7 +86,7 @@ public class ItemController {
         }
     }
 
-    @GetMapping(path = "/{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public @ResponseBody Item get(@RequestParam int id) {
         return itemRepo.findById(id).orElseThrow(()-> {
@@ -96,7 +95,7 @@ public class ItemController {
         });
     }
 
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public @ResponseBody void delete(@RequestParam int id) {
         itemRepo.deleteById(id);
