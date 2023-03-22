@@ -34,7 +34,7 @@ public class SecurityConfig {
                     .requestMatchers("/login").permitAll()
 
                     // USER ENDPOINTS
-                    
+
                     // The endpoints to create and fetch a user are open to anyone
                     .requestMatchers(HttpMethod.GET, "/user").permitAll()
                     .requestMatchers(HttpMethod.POST, "/user").permitAll()
@@ -42,7 +42,7 @@ public class SecurityConfig {
                     // The endpoints to change or delete a user require the user to be logged in
                     .requestMatchers(HttpMethod.DELETE, "/user").authenticated()
                     .requestMatchers(HttpMethod.PUT, "/user").authenticated()
-                    
+
                     // Only admins can access the endpoint that changes whether a user is an admin
                     .requestMatchers(HttpMethod.POST, "/user/admin*").hasAuthority("ROLE_ADMIN")
                     .requestMatchers(HttpMethod.POST, "/category").hasAuthority("ROLE_ADMIN")
