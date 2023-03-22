@@ -3,6 +3,7 @@ package edu.ntnu.jakobkg.idatt2105projbackend.model;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import edu.ntnu.jakobkg.idatt2105projbackend.repo.UserRepository;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,9 +19,29 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+
 @Entity
+/**
+ * User
+ * 
+ * This class represents a user, and contains relevant info
+ * such as name, email address and home address
+ * 
+ * A user is uniquely identified by their email address, but we 
+ * generate an additional unique ID number for each user. This is 
+ * because a user may change their email address, so if this email address
+ * was the only unique identifier we would need to update the records
+ * of the user's sales listings and bookmarks when they change their email.
+ * By using a separate, unique ID number, we avoid this
+ */
 public class User implements UserDetails {
 
+    @Autowired
+    UserRepository userRepo;
+
+    /**
+     * There are two types of users, regular USER and ADMIN
+     */
     public static enum UserType {
         USER,
         ADMIN
@@ -47,7 +69,6 @@ public class User implements UserDetails {
     private String lastname;
 
     @Getter
-    @Setter
     private String email;
 
     @Getter
@@ -65,17 +86,29 @@ public class User implements UserDetails {
     public User() {
     }
 
+    /**
+     * Constructs a User object with the given data,
+     * the User type USER and a randomly generated unique ID
+     * 
+     * @param firstname
+     * @param lastname
+     * @param email
+     * @param password
+     * @param streetAddress
+     * @param postCode
+     * @param city
+     */
     public User(String firstname, String lastname, String email, String password, String streetAddress, Integer postCode,
-            String city) {
+            String city) throws IllegalArgumentException {
+
         this.type = UserType.USER;
         this.firstname = firstname;
         this.lastname = lastname;
-        this.email = email;
-        this.password = new BCryptPasswordEncoder().encode(password);
+        this.setEmail(email);
+        this.setPassword(password);
         this.streetAddress = streetAddress;
         this.postCode = postCode;
         this.city = city;
-
     }
 
     // Full address getter, derived from address related fields
@@ -85,6 +118,14 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = new BCryptPasswordEncoder().encode(password);
+    }
+
+    public void setEmail(String email) {
+        if (userRepo.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email already linked to another account");
+        }
+
+        this.email = email;
     }
 
     @Override
@@ -105,21 +146,33 @@ public class User implements UserDetails {
         return email;
     }
 
+    /**
+     * We do not expire user accounts
+     */
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    /**
+     * We do not support locked accounts at this time
+     */
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    /**
+     * User credentials do not expire
+     */
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    /**
+     * We do not support disabling accounts at this time
+     */
     @Override
     public boolean isEnabled() {
         return true;
