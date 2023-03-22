@@ -10,9 +10,6 @@ import java.util.List;
 @Repository
 public interface BookmarkRepository extends JpaRepository<Bookmark, BookmarkId> {
 
-    // Returns a list of bookmarks saved by a specified user..?
+    // Returns a list of bookmarks saved by a specified user
     List<Bookmark> findByBookmarkIdUserId(int userId);
-
-
-
 }

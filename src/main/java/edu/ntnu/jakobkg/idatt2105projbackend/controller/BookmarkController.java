@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/bookmark")
 public class BookmarkController {
+
     Logger logger = LoggerFactory.getLogger(BookmarkController.class);
 
     @Autowired
@@ -29,6 +31,13 @@ public class BookmarkController {
     //@Autowired
     //ItemRepository itemRepository;
 
+    /**
+     * Adds a bookmark.
+     *
+     * @param token  jwt identifying the user
+     * @param itemId the item id
+     * @return the bookmark
+     */
     @PostMapping(path = "/{itemId}")
     @ResponseStatus(code = HttpStatus.CREATED)
     public @ResponseBody Bookmark addBookmark(@RequestHeader("Authorization") String token, @PathVariable int itemId) {
@@ -49,6 +58,12 @@ public class BookmarkController {
         return bookmarkRepository.findById(new BookmarkId(userId, itemId)).orElseThrow(); // if this runs, bookmark already exists
     }
 
+    /**
+     * Deletes a bookmark.
+     *
+     * @param token  jwt identifying the user
+     * @param itemId the item id
+     */
     @DeleteMapping(path = "/{itemId}")
     @ResponseStatus(code = HttpStatus.OK)
     public @ResponseBody void deleteBookmark(@RequestHeader("Authorization") String token, @PathVariable int itemId) {
@@ -63,6 +78,13 @@ public class BookmarkController {
         bookmarkRepository.delete(new Bookmark(new BookmarkId(userId, itemId)));
     }
 
+    /**
+     * Checks if an item is bookmarked by the logged-in user
+     *
+     * @param token  jwt identifying the user
+     * @param itemId the item id
+     * @return the bookmark if it exists, else HTTP code 404
+     */
     @GetMapping(path = "/{itemId}")
     public @ResponseBody Bookmark isBookmarked(@RequestHeader("Authorization") String token, @PathVariable int itemId) {
         // Authentication
@@ -79,6 +101,12 @@ public class BookmarkController {
     }
 
 
+    /**
+     * Gets all bookmarks from a logged-in user.
+     *
+     * @param token jwt identifying the user
+     * @return all bookmarks by user id
+     */
     @GetMapping(path = "")
     public @ResponseBody List<Bookmark> getAllBookmarksByUserId(@RequestHeader("Authorization") String token) {
         // Authentication
@@ -90,5 +118,4 @@ public class BookmarkController {
         // returns HTTP status 200 whether user has bookmarks or not
         return result;
     }
-
 }
