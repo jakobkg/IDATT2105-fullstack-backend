@@ -33,18 +33,6 @@ public class Item {
         this.userId = userId;
     }
 
-    public Item(int id, String title, String description, String date, String latitude, String longitude, String price, int categoryId, String images, int userId) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.date = date;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.price = price;
-        this.categoryId = categoryId;
-        this.images = images;
-        this.userId = userId;
-    }
 
     public Item() {
 
@@ -120,6 +108,10 @@ public class Item {
 
     public int getUserId() {
         return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     @Override

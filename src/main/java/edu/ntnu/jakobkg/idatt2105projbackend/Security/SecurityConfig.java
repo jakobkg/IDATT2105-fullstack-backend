@@ -39,6 +39,11 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.DELETE, "/user").authenticated()
                     .requestMatchers(HttpMethod.PUT, "/user").authenticated()
                     .requestMatchers(HttpMethod.POST, "/user/admin*").hasAuthority("ROLE_ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/item").authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/item/*").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/item").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/item/*").permitAll()
+                    .requestMatchers(HttpMethod.DELETE, "/item/*").authenticated()
                     .anyRequest().authenticated().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilterBefore(new AuthFilter(), UsernamePasswordAuthenticationFilter.class);
