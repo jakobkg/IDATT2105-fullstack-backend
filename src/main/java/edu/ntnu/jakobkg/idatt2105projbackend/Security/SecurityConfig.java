@@ -45,7 +45,9 @@ public class SecurityConfig {
                     
                     // Only admins can access the endpoint that changes whether a user is an admin
                     .requestMatchers(HttpMethod.POST, "/user/admin*").hasAuthority("ROLE_ADMIN")
-                    
+                    .requestMatchers(HttpMethod.POST, "/category").hasAuthority("ROLE_ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/category/*").hasAuthority("ROLE_ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/category/*").hasAuthority("ROLE_ADMIN")
                     .anyRequest().authenticated().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilterBefore(new AuthFilter(), UsernamePasswordAuthenticationFilter.class);
