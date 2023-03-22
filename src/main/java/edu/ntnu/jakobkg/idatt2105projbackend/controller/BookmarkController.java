@@ -67,6 +67,7 @@ public class BookmarkController {
     }
 
 
+    @GetMapping(path = "")
     public @ResponseBody List<Bookmark> getAllBookmarksByUserId() {
         //todo: her henter vi userId via jwt token
         int userId = 1;
