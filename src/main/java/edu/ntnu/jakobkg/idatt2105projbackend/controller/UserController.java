@@ -7,7 +7,6 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -131,7 +129,10 @@ public class UserController {
     public @ResponseBody void updateUser(@PathVariable Integer id,
             @RequestBody AddUserRequest request) {
 
-        User authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User authenticatedUser = userRepo.findByEmail(email).orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.FORBIDDEN);
+        });
 
         if (authenticatedUser.getId() != id || authenticatedUser.getType() != UserType.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
