@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import edu.ntnu.jakobkg.idatt2105projbackend.repo.UserRepository;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,9 +36,6 @@ import lombok.Setter;
  * By using a separate, unique ID number, we avoid this
  */
 public class User implements UserDetails {
-
-    @Autowired
-    UserRepository userRepo;
 
     /**
      * There are two types of users, regular USER and ADMIN
@@ -69,6 +67,7 @@ public class User implements UserDetails {
     private String lastname;
 
     @Getter
+    @Column(unique = true)
     private String email;
 
     @Getter
@@ -121,10 +120,6 @@ public class User implements UserDetails {
     }
 
     public void setEmail(String email) {
-        if (userRepo.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already linked to another account");
-        }
-
         this.email = email;
     }
 
