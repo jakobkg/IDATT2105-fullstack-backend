@@ -17,24 +17,41 @@ public class Item {
     private String latitude;
     private String longitude;
     private String price;
-    private int categoryID;
+    private int categoryId;
     private String images;
-    private int userID;
+    private int userId;
 
-    public Item(String title, String description, String date, String latitude, String longitude, String price, int categoryID, String images, int userID) {
+    public Item(String title, String description, String date, String latitude, String longitude, String price, int categoryId, String images, int userId) {
         this.title = title;
         this.description = description;
         this.date = date;
         this.latitude = latitude;
         this.longitude = longitude;
         this.price = price;
-        this.categoryID = categoryID;
+        this.categoryId = categoryId;
         this.images = images;
-        this.userID = userID;
+        this.userId = userId;
+    }
+
+    public Item(int id, String title, String description, String date, String latitude, String longitude, String price, int categoryId, String images, int userId) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.date = date;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.price = price;
+        this.categoryId = categoryId;
+        this.images = images;
+        this.userId = userId;
     }
 
     public Item() {
 
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -85,12 +102,12 @@ public class Item {
         this.price = price;
     }
 
-    public int getCategoryID() {
-        return categoryID;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategoryID(int categoryID) {
-        this.categoryID = categoryID;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getImages() {
@@ -101,7 +118,15 @@ public class Item {
         this.images = images;
     }
 
-    public int getUserID() {
-        return userID;
+    public int getUserId() {
+        return userId;
+    }
+
+    @Override
+    public String toString() {
+        return "Id: "+this.id+" "+" Title: "+this.title+" Description: "+this.description+
+                " Date: "+this.date+" Latitude: "+this.latitude+" Longitude: "+this.longitude+
+                " Price: "+this.price+" CategoryId: "+ this.categoryId+" Images: "+this.images+
+                " UserId: "+this.userId;
     }
 }

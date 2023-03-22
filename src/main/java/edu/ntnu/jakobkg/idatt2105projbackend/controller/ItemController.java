@@ -21,7 +21,6 @@ public class ItemController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody Item add(@RequestBody Item item) {
-
         Item newItem = new Item(
                 item.getTitle(),
                 item.getDescription(),
@@ -29,9 +28,9 @@ public class ItemController {
                 item.getLatitude(),
                 item.getLongitude(),
                 item.getPrice(),
-                item.getCategoryID(),
+                item.getCategoryId(),
                 item.getImages(),
-                item.getUserID());
+                item.getUserId());
         return itemRepo.save(newItem);
     }
 
@@ -49,7 +48,13 @@ public class ItemController {
             @RequestParam int userId) {
 
 
-        Item newItem = new Item(
+        itemRepo.findById(id).orElseThrow(()-> {
+            logger.warn("Item not found.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        });
+
+        Item updatedItem = new Item(
+                id,
                 title,
                 description,
                 date,
@@ -59,8 +64,8 @@ public class ItemController {
                 categoryId,
                 images,
                 userId);
+        return itemRepo.save(updatedItem);
 
-        return itemRepo.save(newItem);
     }
 
     @GetMapping("")
@@ -69,7 +74,7 @@ public class ItemController {
 
         //get based on category id
         if (categoryId < 0) {
-            return itemRepo.findAll(PageRequest.of(page, this.pageNum)).stream().filter(i->i.getCategoryID() == categoryId).toList();
+            return itemRepo.findAll(PageRequest.of(page, this.pageNum)).stream().filter(i->i.getCategoryId() == categoryId).toList();
         // get all
         } else {
             return itemRepo.findAll(PageRequest.of(page, this.pageNum));
@@ -78,16 +83,16 @@ public class ItemController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public @ResponseBody Item get(@RequestParam int id) {
+    public @ResponseBody Item get(@PathVariable int id) {
         return itemRepo.findById(id).orElseThrow(()-> {
-            logger.warn("No item found.");
+            logger.warn("Item not found.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public @ResponseBody void delete(@RequestParam int id) {
+    public @ResponseBody void delete(@PathVariable int id) {
         itemRepo.deleteById(id);
     }
 
