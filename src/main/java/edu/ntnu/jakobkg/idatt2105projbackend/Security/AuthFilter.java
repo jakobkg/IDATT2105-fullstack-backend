@@ -22,6 +22,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
+/**
+ * Authentication filter
+ * 
+ * The `doFilterInternal` method of this class is called
+ * once per request the server receives, and provides
+ * authentication context to request handlers that come after
+ * it in the request handling chain
+ */
 @Controller
 public class AuthFilter extends OncePerRequestFilter {
 
@@ -33,34 +41,45 @@ public class AuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        // check Bearer auth header
+        // First, check if an authorization header was provided at all
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith("Bearer ")) {
+            // If not, there is no authentication to be done and we return early
             filterChain.doFilter(request, response);
             return;
         }
 
+        // We then validate the provided JWT, and get the encoded email
         String token = header.substring(7);
-        final String username = validateTokenAndGetUserId(token);
+        final String username = validateTokenAndGetEmail(token);
         if (username == null) {
+            // If the token is invalid, we save some time by returning early
             filterChain.doFilter(request, response);
             return;
         }
 
+        // If the token is valid, we also want the user type
+        // At this point we already know the token is valid, and do not null-check
         final String type = validateTokenAndGetUserType(token);
 
-
+        // Register the authenticated user in the request's security context
+        // This allows handlers furhter down the pipeline to access this info
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 username,
                 null,
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + type)));
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        // then, continue with authenticated user context
+        // Continue down the filter chain
         filterChain.doFilter(request, response);
     }
 
-    public String validateTokenAndGetUserId(final String token) {
+    /**
+     * Checks whether the given JWT is valid, and extracts the email from it
+     * @param token - a JWT
+     * @return the email contained if the token is valid, null otherwise
+     */
+    public String validateTokenAndGetEmail(final String token) {
         try {
             final Algorithm hmac512 = Algorithm.HMAC512(TokenController.secret);
             final JWTVerifier verifier = JWT.require(hmac512).build();
@@ -71,6 +90,11 @@ public class AuthFilter extends OncePerRequestFilter {
         }
     }
 
+    /**
+     * Checks whether the given JWT is valid, and extracts the user type from it
+     * @param token - a JWT
+     * @return the user type contained if the token is valid, null otherwise
+     */
     public String validateTokenAndGetUserType(final String token) {
         try {
             final Algorithm hmac512 = Algorithm.HMAC512(TokenController.secret);
