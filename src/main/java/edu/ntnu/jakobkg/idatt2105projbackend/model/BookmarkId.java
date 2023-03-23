@@ -1,8 +1,12 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.model;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import java.io.Serializable;
+
+import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer.UserInfoEndpointConfig;
 
 /**
  * A unique ID describing a Bookmark, it includes the item ID and the user ID
@@ -10,9 +14,13 @@ import java.io.Serializable;
 @Embeddable
 public class BookmarkId implements Serializable {
 
-    private Integer userId;
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
 
-    private Integer itemId;
+    @ManyToOne
+    @JoinColumn(name = "itemId")
+    private Item item;
 
     /**
      * Instantiates a new Bookmark id.
@@ -20,7 +28,7 @@ public class BookmarkId implements Serializable {
      * @param userId the user id
      * @param itemId the item id
      */
-    public BookmarkId (int userId, int itemId) {
+    public BookmarkId (User user, Item item) {
         // Assumes ID's start at 1
         if (userId != 0 && itemId != 0) {
             this.userId = userId;
