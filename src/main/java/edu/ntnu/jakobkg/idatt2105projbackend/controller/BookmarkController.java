@@ -2,8 +2,10 @@ package edu.ntnu.jakobkg.idatt2105projbackend.controller;
 
 import edu.ntnu.jakobkg.idatt2105projbackend.model.Bookmark;
 import edu.ntnu.jakobkg.idatt2105projbackend.model.BookmarkId;
+import edu.ntnu.jakobkg.idatt2105projbackend.model.Item;
 import edu.ntnu.jakobkg.idatt2105projbackend.model.User;
 import edu.ntnu.jakobkg.idatt2105projbackend.repo.BookmarkRepository;
+import edu.ntnu.jakobkg.idatt2105projbackend.repo.ItemRepository;
 import edu.ntnu.jakobkg.idatt2105projbackend.repo.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/bookmark")
@@ -27,9 +28,8 @@ public class BookmarkController {
     @Autowired
     BookmarkRepository bookmarkRepository;
 
-    //todo: fjern kommentering når ItemRepository finnes
-    //@Autowired
-    //ItemRepository itemRepository;
+    @Autowired
+    ItemRepository itemRepository;
 
     /**
      * Adds a bookmark.
@@ -45,17 +45,17 @@ public class BookmarkController {
         // Authentication
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedinUser = userRepo.findByEmail(authenticatedUsername).orElseThrow();
-        int userId = loggedinUser.getId();
 
-        //todo: fjern kommentering når ItemRepository finnes
-/*        if (!itemRepository.existsById(itemId)) {
-            logger.warn("Item with itemId: " + itemId + " does not exist");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }*/
-        if (!bookmarkRepository.existsById(new BookmarkId(userId, itemId)))
-            return bookmarkRepository.save(new Bookmark(new BookmarkId(userId, itemId)));
+        Item chosenItem = itemRepository.findById(itemId).orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND);
+        });
 
-        return bookmarkRepository.findById(new BookmarkId(userId, itemId)).orElseThrow(); // if this runs, bookmark already exists
+        if (!bookmarkRepository.existsById(new BookmarkId(loggedinUser, chosenItem)))
+            return bookmarkRepository.save(new Bookmark(new BookmarkId(loggedinUser, chosenItem)));
+
+        return bookmarkRepository.findById(new BookmarkId(loggedinUser, chosenItem)).orElseThrow(); // if this runs,
+                                                                                                    // bookmark already
+                                                                                                    // exists
     }
 
     /**
@@ -70,12 +70,17 @@ public class BookmarkController {
         // Authentication
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedinUser = userRepo.findByEmail(authenticatedUsername).orElseThrow();
-        int userId = loggedinUser.getId();
 
-        // HTTP status 200 if there is nothing to delete
-        if (!bookmarkRepository.existsById(new BookmarkId(userId, itemId))) return;
+        Item chosenItem = itemRepository.findById(itemId).orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND);
+        });
 
-        bookmarkRepository.delete(new Bookmark(new BookmarkId(userId, itemId)));
+        Bookmark bookmark = bookmarkRepository.findById(new BookmarkId(loggedinUser, chosenItem))
+                .orElseThrow(() -> {
+                    return new ResponseStatusException(HttpStatus.OK); // If the bookmark doesn't exist, HTTP 200
+                });
+
+        bookmarkRepository.delete(bookmark);
     }
 
     /**
@@ -92,14 +97,17 @@ public class BookmarkController {
         User loggedinUser = userRepo.findByEmail(authenticatedUsername).orElseThrow();
         int userId = loggedinUser.getId();
 
-        Bookmark bookmark = bookmarkRepository.findById(new BookmarkId(userId, itemId)).orElseThrow(() -> {
+        Item chosenItem = itemRepository.findById(itemId).orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND);
+        });
+
+        Bookmark bookmark = bookmarkRepository.findById(new BookmarkId(loggedinUser, chosenItem)).orElseThrow(() -> {
             logger.warn("Bookmark with userId: " + userId + " and itemId: " + itemId + " not found.");
             return new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
         logger.info("Bookmark with userId: " + userId + " and itemId: " + itemId + " found.");
         return bookmark;
     }
-
 
     /**
      * Gets all bookmarks from a logged-in user.
