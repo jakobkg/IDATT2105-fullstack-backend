@@ -20,13 +20,9 @@ jobs:
         distribution: 'oracle'
         cache: maven
       
-    - name: Build database image
-      run: docker build database --tag database
-    
-    - name: Start database service
-      run: docker run -d -p 3306:3306 database:latest
-      
     - name: Build with Maven
+      env:
+        MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
       run: mvn -B package --file pom.xml
     
     - name: Copy compiled .jar to staging
