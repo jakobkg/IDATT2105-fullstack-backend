@@ -1,5 +1,6 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.Security;
 
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -30,6 +31,8 @@ public class SecurityConfig {
                 .csrf().disable()
                 .cors().and()
                 .authorizeHttpRequests()
+                    // Allow all OPTIONS requests from browsers
+                    .requestMatchers(HttpMethod.OPTIONS).permitAll()
                     // The login endpoint is open to anyone
                     .requestMatchers("/login").permitAll()
 
