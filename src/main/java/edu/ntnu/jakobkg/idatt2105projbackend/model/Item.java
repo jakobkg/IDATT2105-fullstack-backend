@@ -1,9 +1,6 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Item {
@@ -18,6 +15,7 @@ public class Item {
     private String longitude;
     private String price;
     private int categoryId;
+    @Column(columnDefinition = "varchar(5000)")
     private String images;
     private int userId;
 
