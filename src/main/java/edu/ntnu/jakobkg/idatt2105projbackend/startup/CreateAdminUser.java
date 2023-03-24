@@ -21,10 +21,10 @@ public class CreateAdminUser implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        User admin = new User("Admin", "Adminsen", "admin@admin.no", "admin", "Admingata 1", 1101, "Adminby");
-        admin.setType(UserType.ADMIN);
-
         if (!userRepository.existsByEmail("admin@admin.no")) {
+            User admin = new User("Admin", "Adminsen", "admin@admin.no", "admin", "Admingata 1", 1101, "Adminby");
+            admin.setType(UserType.ADMIN);
+
             userRepository.save(admin);
         }
     }
