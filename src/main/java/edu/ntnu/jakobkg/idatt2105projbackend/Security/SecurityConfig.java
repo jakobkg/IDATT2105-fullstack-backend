@@ -69,6 +69,8 @@ public class SecurityConfig {
                 // CATEGORY ENDPOINTS //
                 ///////////////////////
 
+                // Anyone can retrieve the list of categories
+                .requestMatchers(HttpMethod.GET, "/category").permitAll()
                 // Only admins can create, update and remove categories
                 .requestMatchers(HttpMethod.POST, "/category").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/category/*").hasAuthority("ROLE_ADMIN")
