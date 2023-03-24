@@ -31,27 +31,49 @@ public class SecurityConfig {
                 .csrf().disable()
                 .cors().and()
                 .authorizeHttpRequests()
-                    // Allow all OPTIONS requests from browsers
-                    .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                    // The login endpoint is open to anyone
-                    .requestMatchers("/login").permitAll()
+                // Allow all OPTIONS requests from browsers
+                .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                // The login endpoint is open to anyone
+                .requestMatchers("/login").permitAll()
 
-                    // USER ENDPOINTS
+                /////////////////////
+                // USER ENDPOINTS //
+                ////////////////////
 
-                    // The endpoints to create and fetch a user are open to anyone
-                    .requestMatchers(HttpMethod.GET, "/user").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                // The endpoints to create and fetch a user are open to anyone
+                .requestMatchers(HttpMethod.GET, "/user").permitAll()
+                .requestMatchers(HttpMethod.POST, "/user").permitAll()
 
-                    // The endpoints to change or delete a user require the user to be logged in
-                    .requestMatchers(HttpMethod.DELETE, "/user").authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/user").authenticated()
+                // The endpoints to change or delete a user require the user to be logged in
+                .requestMatchers(HttpMethod.DELETE, "/user").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/user").authenticated()
 
-                    // Only admins can access the endpoint that changes whether a user is an admin
-                    .requestMatchers(HttpMethod.POST, "/user/admin*").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.POST, "/category").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/category/*").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/category/*").hasAuthority("ROLE_ADMIN")
-                    .anyRequest().authenticated().and()
+                // Only admins can access the endpoint that changes whether a user is an admin
+                .requestMatchers(HttpMethod.POST, "/user/admin*").hasAuthority("ROLE_ADMIN")
+
+                ////////////////////
+                // ITEM ENDPOINTS //
+                ///////////////////
+
+                // Endpoints for fetching multiple/single item are open for everyone
+                .requestMatchers(HttpMethod.GET, "/item").permitAll()
+                .requestMatchers(HttpMethod.GET, "/item/*").permitAll()
+
+                // The endpoints to create, edit or remove item require user to be logged in
+                .requestMatchers(HttpMethod.POST, "/item").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/item/*").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/item/*").authenticated()
+
+                ////////////////////////
+                // CATEGORY ENDPOINTS //
+                ///////////////////////
+
+                // Only admins can create, update and remove categories
+                .requestMatchers(HttpMethod.POST, "/category").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/category/*").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/category/*").hasAuthority("ROLE_ADMIN")
+
+                .anyRequest().authenticated().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilterBefore(new AuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
