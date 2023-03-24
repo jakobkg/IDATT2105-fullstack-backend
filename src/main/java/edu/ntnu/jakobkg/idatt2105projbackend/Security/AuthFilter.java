@@ -45,6 +45,7 @@ public class AuthFilter extends OncePerRequestFilter {
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith("Bearer ")) {
             // If not, there is no authentication to be done and we return early
+            logger.info("Non-authenticated request");
             filterChain.doFilter(request, response);
             return;
         }
@@ -54,6 +55,7 @@ public class AuthFilter extends OncePerRequestFilter {
         final String username = validateTokenAndGetEmail(token);
         if (username == null) {
             // If the token is invalid, we save some time by returning early
+            logger.info("Invalid token received");
             filterChain.doFilter(request, response);
             return;
         }
@@ -61,6 +63,7 @@ public class AuthFilter extends OncePerRequestFilter {
         // If the token is valid, we also want the user type
         // At this point we already know the token is valid, and do not null-check
         final String type = validateTokenAndGetUserType(token);
+        logger.info("Authenticated request from " + username);
 
         // Register the authenticated user in the request's security context
         // This allows handlers furhter down the pipeline to access this info

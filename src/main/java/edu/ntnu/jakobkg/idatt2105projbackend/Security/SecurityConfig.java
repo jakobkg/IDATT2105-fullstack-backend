@@ -42,6 +42,7 @@ public class SecurityConfig {
 
                 // The endpoints to create and fetch a user are open to anyone
                 .requestMatchers(HttpMethod.GET, "/user").permitAll()
+                .requestMatchers(HttpMethod.GET, "/user/*").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user").permitAll()
 
                 // The endpoints to change or delete a user require the user to be logged in

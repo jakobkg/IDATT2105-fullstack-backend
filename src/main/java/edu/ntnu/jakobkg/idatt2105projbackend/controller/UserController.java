@@ -107,6 +107,7 @@ public class UserController {
     @GetMapping(path = "/{id}")
     @ResponseStatus(code = HttpStatus.OK)
     public @ResponseBody User getUser(@PathVariable Integer id) {
+        System.out.println("Henter bruker " + id);
         return userRepo.findById(id).orElseThrow(() -> {
             return new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
