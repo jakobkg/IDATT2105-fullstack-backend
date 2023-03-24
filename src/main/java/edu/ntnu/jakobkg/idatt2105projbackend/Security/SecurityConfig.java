@@ -1,6 +1,5 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.Security;
 
-import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

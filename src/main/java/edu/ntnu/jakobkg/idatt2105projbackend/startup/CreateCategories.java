@@ -16,13 +16,15 @@ public class CreateCategories implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        categoryRepo.save(new Category("Elektronikk"));
-        categoryRepo.save(new Category("Klær"));
-        categoryRepo.save(new Category("Kunst"));
-        categoryRepo.save(new Category("Dyr"));
-        categoryRepo.save(new Category("Møbler"));
-        categoryRepo.save(new Category("Sport"));
-        categoryRepo.save(new Category("Planter"));
-        categoryRepo.save(new Category("Hvitevarer"));
+        if (categoryRepo.count() == 0) {
+            categoryRepo.save(new Category("Elektronikk"));
+            categoryRepo.save(new Category("Klær"));
+            categoryRepo.save(new Category("Kunst"));
+            categoryRepo.save(new Category("Dyr"));
+            categoryRepo.save(new Category("Møbler"));
+            categoryRepo.save(new Category("Sport"));
+            categoryRepo.save(new Category("Planter"));
+            categoryRepo.save(new Category("Hvitevarer"));
+        }
     }
 }

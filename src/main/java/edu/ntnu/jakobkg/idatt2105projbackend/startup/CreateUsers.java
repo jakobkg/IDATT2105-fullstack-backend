@@ -16,7 +16,6 @@ public class CreateUsers implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-
         if (!userRepository.existsByEmail("ole@nordmann.no")) {
             userRepository.save(new User("Ole", "Nordmann", "ole@nordmann.no", "ole123", "Elgesetergate 2", 7031, "Trondheim"));
         }
