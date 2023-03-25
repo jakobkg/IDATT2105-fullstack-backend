@@ -28,8 +28,8 @@ public class ItemController {
 
     /**
      * Add an item
-     * @param request
-     * @return
+     * @param request item object without id and user id
+     * @return item object
      */
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
@@ -87,12 +87,13 @@ public class ItemController {
 
     /**
      * Get multiple items
-     * @param page
-     * @param categoryId
-     * @return all items or all items based on categoryId
+     * @param page (optional)
+     * @param categoryId (optional)
+     * @param userId (optional)
+     * @return all items or all items based on categoryId/userId
      */
     @GetMapping("")
-    public Iterable<Item> getMultiple(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="-1") int categoryId) {
+    public Iterable<Item> getMultiple(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="-1") int categoryId, @RequestParam(defaultValue="-1") int userId) {
         page = page -1; //zero-indexing on pages
         if (page<0) {
             logger.warn("Page index must not be negative.");
@@ -104,7 +105,10 @@ public class ItemController {
         //get based on category id
         if (categoryId >= 0) {
             return itemRepo.findAll(PageRequest.of(page, this.pageSize)).stream().filter(i->i.getCategoryId() == categoryId).toList();
-        // get all
+        // get based on user id
+        } else if (userId >= 0) {
+            return itemRepo.findAll(PageRequest.of(page, this.pageSize)).stream().filter(i->i.getUserId() == userId).toList();
+        //get all
         } else {
             return itemRepo.findAll(PageRequest.of(page, this.pageSize));
         }
