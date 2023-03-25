@@ -94,14 +94,16 @@ public class ItemController {
      */
     @GetMapping("")
     public Iterable<Item> getMultiple(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="-1") int categoryId, @RequestParam(defaultValue="-1") int userId) {
-        page = page -1; //zero-indexing on pages
+        if (page != 0) {
+            page = page -1; //zero-indexing on pages
+        }
+
         if (page<0) {
             logger.warn("Page index must not be negative.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        logger.info("Request to get all items: "+" Page number: "+page+" Page size: "+pageSize+" Category id: "+categoryId);
-
+        logger.info("Request to get all items: "+" Page number: "+page+" Page size: "+pageSize+" Category id: "+categoryId + " User id: "+userId);
         //get based on category id
         if (categoryId >= 0) {
             return itemRepo.findAll(PageRequest.of(page, this.pageSize)).stream().filter(i->i.getCategoryId() == categoryId).toList();
