@@ -58,6 +58,7 @@ public class SecurityConfig {
                 // Endpoints for fetching multiple/single item are open for everyone
                 .requestMatchers(HttpMethod.GET, "/item").permitAll()
                 .requestMatchers(HttpMethod.GET, "/item/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/item/search/*").permitAll()
 
                 // The endpoints to create, edit or remove item require user to be logged in
                 .requestMatchers(HttpMethod.POST, "/item").authenticated()

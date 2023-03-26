@@ -110,7 +110,7 @@ public class ItemController {
             return itemRepo.findAll(PageRequest.of(page, this.pageSize)).stream().filter(i->i.getCategoryId() == categoryId).toList();
         // get based on user id
         } else if (userId >= 0) {
-            return itemRepo.findAll(PageRequest.of(page, this.pageSize)).stream().filter(i->i.getUserId() == userId).toList();
+            return itemRepo.findByCategoryId(categoryId, PageRequest.of(page, this.pageSize));
         //get all
         } else {
             return itemRepo.findAll(PageRequest.of(page, this.pageSize));
@@ -150,5 +150,11 @@ public class ItemController {
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+    }
+
+    @GetMapping("/search/{searchterm}")
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody Iterable<Item> search(@PathVariable String searchterm, @RequestParam(defaultValue = "1") Integer page) {
+        return itemRepo.searchItems(searchterm, PageRequest.of(page - 1, pageSize));
     }
 }
