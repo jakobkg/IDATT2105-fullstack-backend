@@ -47,6 +47,7 @@ public class ItemController {
                 request.date(),
                 request.latitude(),
                 request.longitude(),
+                request.location(),
                 request.price(),
                 request.categoryId(),
                 request.images(),

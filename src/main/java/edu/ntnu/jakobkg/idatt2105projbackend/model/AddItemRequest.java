@@ -6,6 +6,7 @@ public record AddItemRequest(
     String date,
     String latitude,
     String longitude,
+    String location,
     String price,
     int categoryId,
     String images) {}
