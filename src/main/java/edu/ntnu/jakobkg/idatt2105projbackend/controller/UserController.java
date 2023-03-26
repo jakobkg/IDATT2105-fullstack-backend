@@ -49,7 +49,7 @@ public class UserController {
      */
     @PostMapping(path = "")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public @ResponseBody void addUser(
+    public @ResponseBody User addUser(
             @RequestBody AddUserRequest request) {
 
         // Hvis det allerede eksisterer en bruker med den angitte mailadressen,
@@ -67,7 +67,7 @@ public class UserController {
                 request.postCode(),
                 request.city());
 
-        userRepo.save(newUser);
+        return userRepo.save(newUser);
     }
 
     /**
@@ -124,7 +124,7 @@ public class UserController {
      */
     @PutMapping(path = "/{id}")
     @ResponseStatus(code = HttpStatus.OK)
-    public @ResponseBody void updateUser(@PathVariable Integer id,
+    public @ResponseBody User updateUser(@PathVariable Integer id,
             @RequestBody UpdateUserRequest request) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -166,7 +166,7 @@ public class UserController {
             user.setCity(request.city());
         }
 
-        userRepo.save(user);
+        return userRepo.save(user);
     }
 
     /**
