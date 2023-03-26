@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/item")
 public class ItemController {
@@ -32,9 +33,9 @@ public class ItemController {
 
     /**
      * Add an item
-     * 
-     * @param request
-     * @return
+
+     * @param request item object without id and user id
+     * @return item object
      */
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
@@ -58,6 +59,7 @@ public class ItemController {
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yy")),
                 request.latitude(),
                 request.longitude(),
+                request.location(),
                 request.price(),
                 request.categoryId(),
                 request.images(),
@@ -101,7 +103,9 @@ public class ItemController {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userRepo.findByEmail(authenticatedUsername).orElseThrow();
 
-        if (loggedInUser.getType() != User.UserType.ADMIN || loggedInUser.getId() != item.getUserId()) {
+        if (loggedInUser.getType() != User.UserType.ADMIN && loggedInUser.getId() != item.getUserId()) {
+            logger.warn("User is not admin and user id is not the same as user id on item.");
+
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
@@ -118,30 +122,31 @@ public class ItemController {
 
     /**
      * Get multiple items
-     * 
-     * @param page
-     * @param categoryId
-     * @return all items or all items based on categoryId
+     * @param page (optional)
+     * @param categoryId (optional)
+     * @param userId (optional)
+     * @return all items or all items based on categoryId/userId
      */
     @GetMapping("")
-    public Iterable<Item> getMultiple(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "-1") int categoryId) {
-        page = page - 1; // zero-indexing on pages
-        if (page < 0) {
+    public Iterable<Item> getMultiple(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="-1") Integer categoryId, @RequestParam(defaultValue="-1") Integer userId) {
+        if (page != 0) {
+            page = page -1; //zero-indexing on pages
+        }
+
+        if (page<0) {
             logger.warn("Page index must not be negative.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-
-        logger.info("Request to get all items: " + " Page number: " + page + " Page size: " + pageSize
-                + " Category id: " + categoryId);
-
-        // get based on category id
+        logger.info("Request to get all items: "+" Page number: "+page+" Page size: "+pageSize+" Category id: "+categoryId + " User id: "+userId);
+        //get based on category id
         if (categoryId >= 0) {
-            return itemRepo.findAll(PageRequest.of(page, this.pageSize)).stream()
-                    .filter(i -> i.getCategoryId() == categoryId).toList();
-            // get all
+            return itemRepo.findByCategoryId(categoryId, PageRequest.of(page, pageSize));
+        // get based on user id
+        } else if (userId >= 0) {
+            return itemRepo.findByUserId(userId, PageRequest.of(page, pageSize));
+        //get all
         } else {
-            return itemRepo.findAll(PageRequest.of(page, this.pageSize));
+            return itemRepo.findAll(PageRequest.of(page, pageSize));
         }
     }
 
@@ -180,5 +185,11 @@ public class ItemController {
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+    }
+
+    @GetMapping("/search/{searchterm}")
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody Iterable<Item> search(@PathVariable String searchterm, @RequestParam(defaultValue = "1") Integer page) {
+        return itemRepo.searchItems(searchterm, PageRequest.of(page - 1, pageSize));
     }
 }

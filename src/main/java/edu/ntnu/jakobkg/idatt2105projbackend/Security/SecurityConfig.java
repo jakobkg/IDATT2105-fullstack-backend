@@ -45,8 +45,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/user").permitAll()
 
                 // The endpoints to change or delete a user require the user to be logged in
-                .requestMatchers(HttpMethod.DELETE, "/user").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/user").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/user/*").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/user/*").authenticated()
 
                 // Only admins can access the endpoint that changes whether a user is an admin
                 .requestMatchers(HttpMethod.POST, "/user/admin*").hasAuthority("ROLE_ADMIN")
@@ -58,6 +58,7 @@ public class SecurityConfig {
                 // Endpoints for fetching multiple/single item are open for everyone
                 .requestMatchers(HttpMethod.GET, "/item").permitAll()
                 .requestMatchers(HttpMethod.GET, "/item/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/item/search/*").permitAll()
 
                 // The endpoints to create, edit or remove item require user to be logged in
                 .requestMatchers(HttpMethod.POST, "/item").authenticated()
@@ -74,6 +75,16 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/category").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/category/*").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/category/*").hasAuthority("ROLE_ADMIN")
+
+                ////////////////////////
+                // BOOKMARK ENDPOINTS //
+                ///////////////////////
+
+                //you have to be logged in to create, edit, get and delete bookmarks
+                .requestMatchers(HttpMethod.POST, "/bookmark").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/bookmark/*").authenticated()
+                .requestMatchers(HttpMethod.GET, "/bookmark").authenticated()
+                .requestMatchers(HttpMethod.GET, "/bookmark/*").authenticated()
 
                 .anyRequest().authenticated().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

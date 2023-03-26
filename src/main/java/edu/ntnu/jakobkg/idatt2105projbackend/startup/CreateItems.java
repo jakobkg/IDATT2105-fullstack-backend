@@ -20,13 +20,13 @@ public class CreateItems implements CommandLineRunner {
 
             itemRepo.save(new Item(
                 "Plante", "Veldig fin plante", "24.03.23",
-                "63.404734992005245", "10.371198931159565",
+                "63.404734992005245", "10.371198931159565", "0100 Sted",
                 "50", 6,
                 "https://media.houseandgarden.co.uk/photos/618944690a583de660124d52/master/w_1600%2Cc_limit/1-house-29mar17-Nick-Pope_b.jpg",
                 2
                 ));
                 itemRepo.save(new Item("Maleri", "Fint maleri", "22.03.23",
-                "63.4106518513291", "10.422525681017316",
+                "63.4106518513291", "10.422525681017316", "1234 Stedsnavn",
                 "6000", 2,
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Theodor_Kittelsen_-_Far%2C_far_away_Soria_Moria_Palace_shimmered_like_Gold_-_Google_Art_Project.jpg/1920px-Theodor_Kittelsen_-_Far%2C_far_away_Soria_Moria_Palace_shimmered_like_Gold_-_Google_Art_Project.jpg",
                 2
