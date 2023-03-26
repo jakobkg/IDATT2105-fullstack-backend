@@ -75,7 +75,7 @@ public class TokenController {
      * @param user - The user for whom to generate a token
      * @return a String containing the generated JWT
      */
-    private static String generateToken(final User user) {
+    public static String generateToken(final User user) {
         final Instant now = Instant.now();
         final Algorithm algorithm = Algorithm.HMAC512(TokenController.secret);
 
