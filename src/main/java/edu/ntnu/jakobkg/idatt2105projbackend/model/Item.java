@@ -1,122 +1,62 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    @Setter
+    @Getter
     private String title;
+    @Setter
+    @Getter
     private String description;
-    //decide if date should be string or something else like this: - @Column(columnDefinition="varchar2(20)")
+    // decide if date should be string or something else like this: -
+    // @Column(columnDefinition="varchar2(20)")
+    @Setter
+    @Getter
     private String date;
+    @Setter
+    @Getter
     private String latitude;
+    @Setter
+    @Getter
     private String longitude;
+    @Setter
+    @Getter
+    private String location;
+    @Setter
+    @Getter
     private String price;
-    private int categoryId;
+    @Setter
+    @Getter
+    private Integer categoryId;
     @Column(columnDefinition = "varchar(5000)")
+    @Setter
+    @Getter
     private String images;
-    private int userId;
+    @Setter
+    @Getter
+    private Integer userId;
 
-    public Item(String title, String description, String date, String latitude, String longitude, String price, int categoryId, String images, int userId) {
+    public Item(String title, String description, String date, String latitude, String longitude, String location,
+            String price, Integer categoryId, String images, Integer userId) {
         this.title = title;
         this.description = description;
         this.date = date;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.location = location;
         this.price = price;
         this.categoryId = categoryId;
         this.images = images;
         this.userId = userId;
     }
-
 
     public Item() {
-
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public int getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public String getImages() {
-        return images;
-    }
-
-    public void setImages(String images) {
-        this.images = images;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    @Override
-    public String toString() {
-        return "Id: "+this.id+" "+" Title: "+this.title+" Description: "+this.description+
-                " Date: "+this.date+" Latitude: "+this.latitude+" Longitude: "+this.longitude+
-                " Price: "+this.price+" CategoryId: "+ this.categoryId+" Images: "+this.images+
-                " UserId: "+this.userId;
     }
 }
