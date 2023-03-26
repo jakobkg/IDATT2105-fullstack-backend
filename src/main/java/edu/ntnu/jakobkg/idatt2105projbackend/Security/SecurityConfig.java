@@ -76,6 +76,16 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/category/*").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/category/*").hasAuthority("ROLE_ADMIN")
 
+                ////////////////////////
+                // BOOKMARK ENDPOINTS //
+                ///////////////////////
+
+                //you have to be logged in to create, edit, get and delete bookmarks
+                .requestMatchers(HttpMethod.POST, "/bookmark").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/bookmark/*").authenticated()
+                .requestMatchers(HttpMethod.GET, "/bookmark").authenticated()
+                .requestMatchers(HttpMethod.GET, "/bookmark/*").authenticated()
+
                 .anyRequest().authenticated().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilterBefore(new AuthFilter(), UsernamePasswordAuthenticationFilter.class);
