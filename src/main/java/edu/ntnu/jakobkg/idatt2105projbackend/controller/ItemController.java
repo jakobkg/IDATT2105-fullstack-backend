@@ -94,7 +94,7 @@ public class ItemController {
      * @return all items or all items based on categoryId/userId
      */
     @GetMapping("")
-    public Iterable<Item> getMultiple(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="-1") int categoryId, @RequestParam(defaultValue="-1") int userId) {
+    public Iterable<Item> getMultiple(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="-1") Integer categoryId, @RequestParam(defaultValue="-1") Integer userId) {
         if (page != 0) {
             page = page -1; //zero-indexing on pages
         }
@@ -107,13 +107,13 @@ public class ItemController {
         logger.info("Request to get all items: "+" Page number: "+page+" Page size: "+pageSize+" Category id: "+categoryId + " User id: "+userId);
         //get based on category id
         if (categoryId >= 0) {
-            return itemRepo.findAll(PageRequest.of(page, this.pageSize)).stream().filter(i->i.getCategoryId() == categoryId).toList();
+            return itemRepo.findByCategoryId(categoryId, PageRequest.of(page, pageSize));
         // get based on user id
         } else if (userId >= 0) {
-            return itemRepo.findByCategoryId(categoryId, PageRequest.of(page, this.pageSize));
+            return itemRepo.findByUserId(userId, PageRequest.of(page, pageSize));
         //get all
         } else {
-            return itemRepo.findAll(PageRequest.of(page, this.pageSize));
+            return itemRepo.findAll(PageRequest.of(page, pageSize));
         }
     }
 
