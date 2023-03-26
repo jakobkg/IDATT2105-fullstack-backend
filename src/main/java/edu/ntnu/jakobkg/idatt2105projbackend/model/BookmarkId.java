@@ -1,8 +1,6 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.model;
 
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,17 +12,14 @@ import java.io.Serializable;
 @Embeddable
 public class BookmarkId implements Serializable {
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
+    
     @Getter
     @Setter
-    private User user;
+    private Integer userId;
 
-    @ManyToOne
-    @JoinColumn(name = "itemId")
     @Getter
     @Setter
-    private Item item;
+    private Integer itemId;
 
     /**
      * Instantiates a new Bookmark id.
@@ -32,9 +27,9 @@ public class BookmarkId implements Serializable {
      * @param userId the user id
      * @param itemId the item id
      */
-    public BookmarkId (User user, Item item) {
-        this.item = item;
-        this.user = user;
+    public BookmarkId (Integer userID, Integer itemID) {
+        this.itemId = itemID;
+        this.userId = userID;
     }
 
     /**

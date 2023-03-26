@@ -51,10 +51,10 @@ public class BookmarkController {
             return new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
 
-        if (!bookmarkRepository.existsById(new BookmarkId(loggedinUser, chosenItem)))
-            return bookmarkRepository.save(new Bookmark(new BookmarkId(loggedinUser, chosenItem)));
+        if (!bookmarkRepository.existsById(new BookmarkId(loggedinUser.getId(), chosenItem.getId())))
+            return bookmarkRepository.save(new Bookmark(new BookmarkId(loggedinUser.getId(), chosenItem.getId())));
 
-        return bookmarkRepository.findById(new BookmarkId(loggedinUser, chosenItem)).orElseThrow(); // if this runs,
+        return bookmarkRepository.findById(new BookmarkId(loggedinUser.getId(), chosenItem.getId())).orElseThrow(); // if this runs,
                                                                                                     // bookmark already
                                                                                                     // exists
     }
@@ -76,7 +76,7 @@ public class BookmarkController {
             return new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
 
-        Bookmark bookmark = bookmarkRepository.findById(new BookmarkId(loggedinUser, chosenItem))
+        Bookmark bookmark = bookmarkRepository.findById(new BookmarkId(loggedinUser.getId(), chosenItem.getId()))
                 .orElseThrow(() -> {
                     return new ResponseStatusException(HttpStatus.OK); // If the bookmark doesn't exist, HTTP 200
                 });
@@ -102,7 +102,7 @@ public class BookmarkController {
             return new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
 
-        Bookmark bookmark = bookmarkRepository.findById(new BookmarkId(loggedinUser, chosenItem)).orElseThrow(() -> {
+        Bookmark bookmark = bookmarkRepository.findById(new BookmarkId(loggedinUser.getId(), chosenItem.getId())).orElseThrow(() -> {
             logger.warn("Bookmark with userId: " + userId + " and itemId: " + itemId + " not found.");
             return new ResponseStatusException(HttpStatus.NOT_FOUND);
         });

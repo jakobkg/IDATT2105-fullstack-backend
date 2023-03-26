@@ -5,6 +5,10 @@ import edu.ntnu.jakobkg.idatt2105projbackend.model.Item;
 import edu.ntnu.jakobkg.idatt2105projbackend.model.User;
 import edu.ntnu.jakobkg.idatt2105projbackend.repo.ItemRepository;
 import edu.ntnu.jakobkg.idatt2105projbackend.repo.UserRepository;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,22 +33,30 @@ public class ItemController {
 
     /**
      * Add an item
+
      * @param request item object without id and user id
      * @return item object
      */
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public @ResponseBody Item add(@RequestBody AddItemRequest request) {
-        String username = (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepo.findByEmail(username).orElseThrow(()-> {
-            logger.warn("Item not found.");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        });
+    public @ResponseBody Integer add(@RequestBody AddItemRequest request) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepo.findByEmail(username).orElseThrow();
+
+        try {
+            Double.valueOf(request.latitude());
+            Double.valueOf(request.longitude());
+            if (Double.valueOf(request.price()) < 0.) {
+                throw new IllegalArgumentException();
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
 
         Item newItem = new Item(
                 request.title(),
                 request.description(),
-                request.date(),
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yy")),
                 request.latitude(),
                 request.longitude(),
                 request.location(),
@@ -53,39 +65,59 @@ public class ItemController {
                 request.images(),
                 user.getId());
 
-        return itemRepo.save(newItem);
+        return itemRepo.save(newItem).getId();
     }
 
     /**
      * Update an item
-     * @param id item id
+     * 
+     * @param id      item id
      * @param request item data
      * @return item object
      */
     @PutMapping("/{id}")
-    public @ResponseBody Item update(@PathVariable Integer id, @RequestBody AddItemRequest request) {
-        Item item = itemRepo.findById(id).orElseThrow(()-> {
+    public @ResponseBody Integer update(@PathVariable Integer id, @RequestBody AddItemRequest request) {
+        Item item = itemRepo.findById(id).orElseThrow(() -> {
             logger.warn("Item not found.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
 
+        try {
+            if (request.latitude() != null) {
+                Double.valueOf(request.latitude());
+            }
+
+            if (request.latitude() != null) {
+                Double.valueOf(request.longitude());
+            }
+
+            if (request.price() != null) {
+                if (Double.valueOf(request.price()) < 0.) {
+                    throw new IllegalArgumentException();
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userRepo.findByEmail(authenticatedUsername).orElseThrow();
+
         if (loggedInUser.getType() != User.UserType.ADMIN && loggedInUser.getId() != item.getUserId()) {
             logger.warn("User is not admin and user id is not the same as user id on item.");
+
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
         item.setTitle(request.title());
         item.setDescription(request.description());
-        item.setDate(request.date());
         item.setLatitude(request.latitude());
         item.setLongitude(request.longitude());
         item.setPrice(request.price());
         item.setCategoryId(request.categoryId());
         item.setImages(request.images());
 
-        return itemRepo.save(item);
+        return itemRepo.save(item).getId();
     }
 
     /**
@@ -105,7 +137,6 @@ public class ItemController {
             logger.warn("Page index must not be negative.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-
         logger.info("Request to get all items: "+" Page number: "+page+" Page size: "+pageSize+" Category id: "+categoryId + " User id: "+userId);
         //get based on category id
         if (categoryId >= 0) {
@@ -121,13 +152,14 @@ public class ItemController {
 
     /**
      * Get single item based on id
+     * 
      * @param id
      * @return item object
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public @ResponseBody Item get(@PathVariable int id) {
-        return itemRepo.findById(id).orElseThrow(()-> {
+        return itemRepo.findById(id).orElseThrow(() -> {
             logger.warn("Item not found.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
@@ -135,6 +167,7 @@ public class ItemController {
 
     /**
      * Delete an item based on id
+     * 
      * @param id
      */
     @DeleteMapping("/{id}")
@@ -143,7 +176,7 @@ public class ItemController {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userRepo.findByEmail(authenticatedUsername).orElseThrow();
 
-        Item item = itemRepo.findById(id).orElseThrow(()-> {
+        Item item = itemRepo.findById(id).orElseThrow(() -> {
             logger.warn("Item not found.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
