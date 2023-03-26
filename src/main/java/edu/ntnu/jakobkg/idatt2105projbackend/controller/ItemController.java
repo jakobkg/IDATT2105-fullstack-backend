@@ -70,6 +70,7 @@ public class ItemController {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userRepo.findByEmail(authenticatedUsername).orElseThrow();
         if (loggedInUser.getType() != User.UserType.ADMIN && loggedInUser.getId() != item.getUserId()) {
+            logger.warn("User is not admin and user id is not the same as user id on item.");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
