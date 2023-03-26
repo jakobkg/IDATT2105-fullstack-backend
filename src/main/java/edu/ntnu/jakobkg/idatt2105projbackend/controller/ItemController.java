@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/item")
 public class ItemController {
