@@ -135,7 +135,7 @@ public class UserController {
             return new ResponseStatusException(HttpStatus.FORBIDDEN);
         });
 
-        if (authenticatedUser.getId() != id || authenticatedUser.getType() != UserType.ADMIN) {
+        if (authenticatedUser.getId() != id && authenticatedUser.getType() != UserType.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
