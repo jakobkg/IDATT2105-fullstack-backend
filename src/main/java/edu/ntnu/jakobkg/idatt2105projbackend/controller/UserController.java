@@ -4,21 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import edu.ntnu.jakobkg.idatt2105projbackend.model.UpdateUserRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import edu.ntnu.jakobkg.idatt2105projbackend.model.AddUserRequest;
@@ -34,10 +28,13 @@ import edu.ntnu.jakobkg.idatt2105projbackend.repo.UserRepository;
  * including creation, updating, fetching and deleting of users
  */
 @Controller
+@CrossOrigin
 @RequestMapping(path = "/user")
 public class UserController {
     @Autowired
     private UserRepository userRepo;
+    Logger logger = LoggerFactory.getLogger(ItemController.class);
+
 
     /**
      * Add new user
@@ -128,14 +125,16 @@ public class UserController {
     @PutMapping(path = "/{id}")
     @ResponseStatus(code = HttpStatus.OK)
     public @ResponseBody void updateUser(@PathVariable Integer id,
-            @RequestBody AddUserRequest request) {
+            @RequestBody UpdateUserRequest request) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User authenticatedUser = userRepo.findByEmail(email).orElseThrow(() -> {
+            logger.warn("User not found");
             return new ResponseStatusException(HttpStatus.FORBIDDEN);
         });
 
         if (authenticatedUser.getId() != id && authenticatedUser.getType() != UserType.ADMIN) {
+            logger.warn("User does not have permissions to update this user and is not admin");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
@@ -143,20 +142,12 @@ public class UserController {
             return new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
 
-        if (userRepo.existsByEmail(request.email())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
-
         if (Objects.nonNull(request.firstname())) {
             user.setFirstname(request.firstname());
         }
 
         if (Objects.nonNull(request.lastname())) {
             user.setLastname(request.lastname());
-        }
-
-        if (Objects.nonNull(request.email())) {
-            user.setEmail(request.email());
         }
 
         if (Objects.nonNull(request.password())) {
