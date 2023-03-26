@@ -39,7 +39,7 @@ public class ItemController {
      */
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public @ResponseBody Integer add(@RequestBody AddItemRequest request) {
+    public @ResponseBody Item add(@RequestBody AddItemRequest request) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepo.findByEmail(username).orElseThrow();
 
@@ -65,7 +65,7 @@ public class ItemController {
                 request.images(),
                 user.getId());
 
-        return itemRepo.save(newItem).getId();
+        return itemRepo.save(newItem);
     }
 
     /**
