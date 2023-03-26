@@ -8,6 +8,7 @@ import lombok.Setter;
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter
     private Integer id;
     @Setter
     @Getter
