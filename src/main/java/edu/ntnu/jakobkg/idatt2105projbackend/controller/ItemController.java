@@ -153,7 +153,7 @@ public class ItemController {
 
     @GetMapping("/search/{searchterm}")
     @ResponseStatus(HttpStatus.OK)
-    public @ResponseBody Iterable<Item> search(@PathVariable String searchterm) {
-        return itemRepo.searchItems(searchterm);
+    public @ResponseBody Iterable<Item> search(@PathVariable String searchterm, @RequestParam(defaultValue = "1") Integer page) {
+        return itemRepo.searchItems(searchterm, PageRequest.of(page - 1, pageSize));
     }
 }

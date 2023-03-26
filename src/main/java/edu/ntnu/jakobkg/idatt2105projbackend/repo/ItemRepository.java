@@ -11,5 +11,5 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     public Iterable<Item> findByCategoryId(Integer categoryId, PageRequest pr);
 
     @Query("select i from Item i where i.title like '%' || :searchterm || '%' or i.description like '%' || :searchterm || '%'")
-    public Iterable<Item> searchItems(@Param("searchterm") String searchterm);
+    public Iterable<Item> searchItems(@Param("searchterm") String searchterm, PageRequest page);
 }
