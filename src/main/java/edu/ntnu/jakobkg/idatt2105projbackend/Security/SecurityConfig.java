@@ -45,8 +45,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/user").permitAll()
 
                 // The endpoints to change or delete a user require the user to be logged in
-                .requestMatchers(HttpMethod.DELETE, "/user").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/user").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/user/*").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/user/*").authenticated()
 
                 // Only admins can access the endpoint that changes whether a user is an admin
                 .requestMatchers(HttpMethod.POST, "/user/admin*").hasAuthority("ROLE_ADMIN")
