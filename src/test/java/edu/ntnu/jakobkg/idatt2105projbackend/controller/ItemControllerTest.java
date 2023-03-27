@@ -21,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,11 +31,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test class for ItemController
  */
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+
 @AutoConfigureMockMvc
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ItemControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -54,7 +57,7 @@ public class ItemControllerTest {
      * @throws Exception
      */
     @Test
-    @Order(1)
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void addItem() throws Exception {
         AddItemRequest request = new AddItemRequest(
                 "Hodetelefoner",
@@ -82,8 +85,25 @@ public class ItemControllerTest {
      * @throws Exception
      */
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void updateItem() throws Exception {
-        AddItemRequest request = new AddItemRequest(
+        AddItemRequest newRequest = new AddItemRequest(
+                "Hodetelefoner",
+                "Veldig fint headset",
+                "60.4",
+                "10.4",
+                "7031 Trondheim",
+                "2000",
+                2,
+                ""
+        );
+
+        MvcResult addItemResult = this.mockMvc.perform(post("/item")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(newRequest))
+                .header("Authorization", "Bearer "+this.token)).andReturn();
+
+        AddItemRequest updateRequest = new AddItemRequest(
                 "Hodetelefoner",
                 "Veldig fint headset",
                 "60.4",
@@ -94,14 +114,13 @@ public class ItemControllerTest {
                 "");
 
         //Check if returned status code is 200 and "1" is returned (item id)
-        String res = this.mockMvc.perform(put("/item/1")
+        MvcResult updateItemResult = this.mockMvc.perform(put("/item/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(request))
+                        .content(new ObjectMapper().writeValueAsString(updateRequest))
                         .header("Authorization", "Bearer "+this.token))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("1"))).toString();
+                .andExpect(content().string(containsString("1"))).andReturn();
 
-        System.out.println(res);
     }
 
 
