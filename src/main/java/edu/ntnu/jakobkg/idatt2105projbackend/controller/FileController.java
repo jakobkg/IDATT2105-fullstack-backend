@@ -55,7 +55,7 @@ public class FileController {
     }
 
     @GetMapping("/{filename:.+}")
-    public ResponseEntity download(@PathVariable String filename) {
+    public ResponseEntity<Resource> download(@PathVariable String filename) {
         Path path = Paths.get(basePath + "/" + filename);
 	    Resource file = null;
 
