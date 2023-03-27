@@ -33,7 +33,7 @@ import java.util.Collections;
 @Controller
 public class AuthFilter extends OncePerRequestFilter {
 
-    private static final Logger LOGGER = LogManager.getLogger(AuthFilter.class);
+    private static Logger logger = LogManager.getLogger(AuthFilter.class);
 
     @Override
     protected void doFilterInternal(
@@ -45,7 +45,6 @@ public class AuthFilter extends OncePerRequestFilter {
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith("Bearer ")) {
             // If not, there is no authentication to be done and we return early
-            logger.info("Non-authenticated request");
             filterChain.doFilter(request, response);
             return;
         }
@@ -55,7 +54,6 @@ public class AuthFilter extends OncePerRequestFilter {
         final String username = validateTokenAndGetEmail(token);
         if (username == null) {
             // If the token is invalid, we save some time by returning early
-            logger.info("Invalid token received");
             filterChain.doFilter(request, response);
             return;
         }
@@ -88,7 +86,6 @@ public class AuthFilter extends OncePerRequestFilter {
             final JWTVerifier verifier = JWT.require(hmac512).build();
             return verifier.verify(token).getSubject();
         } catch (final JWTVerificationException verificationEx) {
-            LOGGER.warn("token is invalid: {}", verificationEx.getMessage());
             return null;
         }
     }
@@ -104,7 +101,6 @@ public class AuthFilter extends OncePerRequestFilter {
             final JWTVerifier verifier = JWT.require(hmac512).build();
             return verifier.verify(token).getClaim("type").asString();
         } catch (final JWTVerificationException verificationEx) {
-            LOGGER.warn("token is invalid: {}", verificationEx.getMessage());
             return null;
         }
     }

@@ -65,7 +65,11 @@ public class ItemController {
                 request.images(),
                 user.getId());
 
-        return itemRepo.save(newItem);
+        Item saved = itemRepo.save(newItem);
+
+        logger.info("User " + user.getId() + "posted new item \"" + request.title() + "\"");
+
+        return saved;
     }
 
     /**
@@ -73,12 +77,11 @@ public class ItemController {
      * 
      * @param id      item id
      * @param request item data
-     * @return item object
+     * @return item id
      */
     @PutMapping("/{id}")
     public @ResponseBody Integer update(@PathVariable Integer id, @RequestBody AddItemRequest request) {
         Item item = itemRepo.findById(id).orElseThrow(() -> {
-            logger.warn("Item not found.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
 
@@ -104,7 +107,7 @@ public class ItemController {
         User loggedInUser = userRepo.findByEmail(authenticatedUsername).orElseThrow();
 
         if (loggedInUser.getType() != User.UserType.ADMIN && loggedInUser.getId() != item.getUserId()) {
-            logger.warn("User is not admin and user id is not the same as user id on item.");
+            logger.warn("User " + loggedInUser.getId() + " made illegal attempt to edit item " + id);
 
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
@@ -118,7 +121,11 @@ public class ItemController {
         item.setCategoryId(request.categoryId());
         item.setImages(request.images());
 
-        return itemRepo.save(item).getId();
+        Integer savedId = itemRepo.save(item).getId();
+
+        logger.info("User " + loggedInUser.getId() + "updated item \"" + id + "\"");
+
+        return savedId;
     }
 
     /**
@@ -135,10 +142,8 @@ public class ItemController {
         }
 
         if (page<0) {
-            logger.warn("Page index must not be negative.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        logger.info("Request to get all items: "+" Page number: "+page+" Page size: "+pageSize+" Category id: "+categoryId + " User id: "+userId);
         //get based on category id
         if (categoryId >= 0) {
             return itemRepo.findByCategoryId(categoryId, PageRequest.of(page, pageSize));
@@ -161,7 +166,6 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public @ResponseBody Item get(@PathVariable int id) {
         return itemRepo.findById(id).orElseThrow(() -> {
-            logger.warn("Item not found.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
     }
@@ -178,12 +182,13 @@ public class ItemController {
         User loggedInUser = userRepo.findByEmail(authenticatedUsername).orElseThrow();
 
         Item item = itemRepo.findById(id).orElseThrow(() -> {
-            logger.warn("Item not found.");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
         if (loggedInUser.getId() == item.getUserId() || loggedInUser.getType() == User.UserType.ADMIN) {
             itemRepo.deleteById(id);
         } else {
+            logger.warn("User " + loggedInUser.getId() + " made illegal attempt to delete item " + id);
+            
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }

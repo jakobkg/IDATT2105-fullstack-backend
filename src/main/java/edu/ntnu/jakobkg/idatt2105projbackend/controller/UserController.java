@@ -88,6 +88,7 @@ public class UserController {
         if (loggedinUser.getType() == UserType.ADMIN || loggedinUser.getId() == id) {
             userRepo.deleteById(id);
         } else {
+            logger.warn("User " + loggedinUser.getId() + " made illegal attempt to delete user " + id);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
@@ -129,12 +130,11 @@ public class UserController {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User authenticatedUser = userRepo.findByEmail(email).orElseThrow(() -> {
-            logger.warn("User not found");
             return new ResponseStatusException(HttpStatus.FORBIDDEN);
         });
 
         if (authenticatedUser.getId() != id && authenticatedUser.getType() != UserType.ADMIN) {
-            logger.warn("User does not have permissions to update this user and is not admin");
+            logger.warn("User " + authenticatedUser.getId() + " made illegal attempt to modify user " + id);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
