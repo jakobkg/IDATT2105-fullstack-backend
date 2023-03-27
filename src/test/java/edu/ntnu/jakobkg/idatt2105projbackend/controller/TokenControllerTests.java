@@ -1,5 +1,6 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.controller;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 import edu.ntnu.jakobkg.idatt2105projbackend.model.LoginRequest;
 import edu.ntnu.jakobkg.idatt2105projbackend.model.User;
@@ -63,13 +67,35 @@ public class TokenControllerTests {
             new LoginRequest("test", "not the right password"));
     }
 
-    @Test(expected = ResponseStatusException.class)
+    @Test
     public void testCreateTokenNonexistingUser() {
         when(userRepo.findByEmail("test"))
             .thenReturn(Optional.empty());
 
-        tokenController.getToken(
-            new LoginRequest("test", "irrelevant to this test"));
+        assertThrows(
+            ResponseStatusException.class, 
+            () -> {
+                tokenController.getToken(
+                    new LoginRequest("test", "irrelevant to this test")
+                );
+            }
+        );
+    }
+
+    @Test
+    public void testTokenContainsEmailTypeAndID() {
+        when(userRepo.findByEmail("test"))
+            .thenReturn(Optional.of(testUser));
+        
+        final String token = tokenController.getToken(
+            new LoginRequest("test", "test")
+        );
+
+        DecodedJWT decoded = JWT.decode(token);
+
+        assertEquals(testUser.getEmail(), decoded.getSubject());
+        assertEquals(testUser.getType().toString(), decoded.getClaim("type").asString());
+        assertEquals(decoded.getClaim("id").asString(), testUser.getId().toString());
     }
 
 }
