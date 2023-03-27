@@ -24,5 +24,4 @@ public class idatt2105ProjBackendApplication {
             }
         };
 	}
-
 }

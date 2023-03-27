@@ -16,8 +16,6 @@ public class Item {
     @Setter
     @Getter
     private String description;
-    // decide if date should be string or something else like this: -
-    // @Column(columnDefinition="varchar2(20)")
     @Setter
     @Getter
     private String date;
