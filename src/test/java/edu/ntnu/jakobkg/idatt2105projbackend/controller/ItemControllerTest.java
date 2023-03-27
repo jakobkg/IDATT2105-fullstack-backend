@@ -1,55 +1,42 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import edu.ntnu.jakobkg.idatt2105projbackend.model.AddItemRequest;
-import edu.ntnu.jakobkg.idatt2105projbackend.model.User;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import static org.hamcrest.Matchers.containsString;
-
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import edu.ntnu.jakobkg.idatt2105projbackend.model.Item;
+import edu.ntnu.jakobkg.idatt2105projbackend.repo.ItemRepository;
+import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.junit4.SpringRunner;
+import java.util.ArrayList;
+import static org.junit.Assert.*;
+
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ItemControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
-    public String token;
-    @BeforeAll
-    public void login() {
-        User testUser = new User("Admin", "Adminsen", "admin@admin.no", "admin", "Admingata 1", 1101, "Adminby");
-        testUser.setId(1);
-        this.token = TokenController.generateToken(testUser);
-    }
+
+    @Mock
+    private ItemRepository itemRepository;
+
+    @InjectMocks
+    private ItemController itemController;
+
+    Item testItem = new Item("title", "description", "date", "lat", "long", "location", "price", 1, "images", 1);
 
     @Test
-    public void addItem() throws Exception {
-        AddItemRequest request = new AddItemRequest(
-                "Hodetelefoner",
-                "Veldig fint headset",
-                "60.4",
-                "10.4",
-                "7031 Trondheim",
-                "2000",
-                2,
-                ""
-        );
+    public void findByCategoryWorks() {
+        ArrayList<Item> arrayList = new ArrayList<>();
+        arrayList.add(testItem);
+        itemRepository.save(testItem);
+        when(itemRepository.findByCategoryId(1, PageRequest.of(0, 24))).thenReturn(arrayList);
 
-        this.mockMvc.perform(post("/item")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(request))
-                .header("Authorization", "Bearer "+this.token))
-                .andExpect(status().isCreated())
-                .andExpect(content().string(containsString("Hodetelefoner")));
+        assertEquals(itemController.getMultiple(0, 1, -1), arrayList);
     }
+
 }
