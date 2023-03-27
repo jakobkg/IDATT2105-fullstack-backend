@@ -3,14 +3,23 @@ package edu.ntnu.jakobkg.idatt2105projbackend.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.ntnu.jakobkg.idatt2105projbackend.model.AddItemRequest;
 import edu.ntnu.jakobkg.idatt2105projbackend.model.User;
+import edu.ntnu.jakobkg.idatt2105projbackend.repo.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.containsString;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -20,9 +29,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test class for ItemController
  */
-
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @SpringBootTest
+@ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ItemControllerTest {
     @Autowired
@@ -44,6 +54,7 @@ public class ItemControllerTest {
      * @throws Exception
      */
     @Test
+    @Order(1)
     public void addItem() throws Exception {
         AddItemRequest request = new AddItemRequest(
                 "Hodetelefoner",
@@ -62,6 +73,7 @@ public class ItemControllerTest {
                         .header("Authorization", "Bearer "+this.token))
                 .andExpect(status().isCreated())
                 .andExpect(content().string(containsString("Hodetelefoner")));
+
     }
 
     /**
@@ -72,19 +84,24 @@ public class ItemControllerTest {
     @Test
     public void updateItem() throws Exception {
         AddItemRequest request = new AddItemRequest(
-                "Plante", "Veldig fin plante",
-                "63.404734992005245", "10.371198931159565", "0100 Sted",
-                "5000", 6,
-                "https://media.houseandgarden.co.uk/photos/618944690a583de660124d52/master/w_1600%2Cc_limit/1-house-29mar17-Nick-Pope_b.jpg"
-        );
+                "Hodetelefoner",
+                "Veldig fint headset",
+                "60.4",
+                "10.4",
+                "7031 Trondheim",
+                "2500",
+                2,
+                "");
 
         //Check if returned status code is 200 and "1" is returned (item id)
-        this.mockMvc.perform(put("/item/1")
+        String res = this.mockMvc.perform(put("/item/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request))
                         .header("Authorization", "Bearer "+this.token))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("1")));
+                .andExpect(content().string(containsString("1"))).toString();
+
+        System.out.println(res);
     }
 
 
@@ -110,7 +127,7 @@ public class ItemControllerTest {
     public void getItem() throws Exception {
         this.mockMvc.perform(get("/item/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Plante")));
+                .andExpect(content().string(containsString("Hodetelefoner")));
     }
 
     /**
@@ -121,8 +138,8 @@ public class ItemControllerTest {
     @Test
     public void getItems() throws Exception {
         this.mockMvc.perform(get("/item"))
-                .andExpect(status().isOk());
-                //.andExpect(jsonPath("$.*", hasSize(11))); -> we dont know the actual size of items
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 
 
