@@ -1,7 +1,9 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.controller;
 
 import java.io.IOException;
-import java.sql.Blob;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 import org.hibernate.engine.jdbc.BlobProxy;
@@ -23,6 +25,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import edu.ntnu.jakobkg.idatt2105projbackend.model.UploadedFile;
 import edu.ntnu.jakobkg.idatt2105projbackend.repo.FileRepository;
+import java.nio.file.Path;
 
 @Controller
 @RequestMapping(path = "/files")
@@ -30,23 +33,17 @@ public class FileController {
     @Autowired
     FileRepository fileRepo;
 
+    String basePath = "${java.io.tmpdir}";
+
     @PostMapping("")
     public ResponseEntity upload(@RequestParam("file") MultipartFile file) {
-        if (!file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
-        UploadedFile uploaded = new UploadedFile();
-        String filename = UUID.randomUUID()
-                + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-        uploaded.setFilename(filename);
-
+        String filename = UUID.randomUUID() + ".jpg";
+        Path path = Paths.get(basePath, filename);
         try {
-            uploaded.setContents(BlobProxy.generateProxy(file.getBytes()));
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        fileRepo.save(uploaded);
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/files/")
                 .path(filename)
@@ -58,10 +55,10 @@ public class FileController {
     public ResponseEntity download(@PathVariable String filename) {
         UploadedFile file = fileRepo.findByFilename(filename);
         try {
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .body(file.getContents().getBytes(1, (int)file.getContents().length()));
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(file.getContents().getBytes(1, (int) file.getContents().length()));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
