@@ -15,7 +15,5 @@ mvn spring-boot:run
 ```
 
 ### Run tests:
-```sh
-mvn test
-```
+To run tests, simply run the tests in your preferred IDE.
 
