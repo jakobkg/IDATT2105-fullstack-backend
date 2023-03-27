@@ -1,11 +1,14 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.controller;
 
 import java.io.IOException;
+import java.sql.Blob;
 import java.util.UUID;
 
+import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,7 +42,7 @@ public class FileController {
         uploaded.setFilename(filename);
 
         try {
-            uploaded.setContents(file.getBytes());
+            uploaded.setContents(BlobProxy.generateProxy(file.getBytes()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -54,9 +57,13 @@ public class FileController {
     @GetMapping("/{filename:.+}")
     public ResponseEntity download(@PathVariable String filename) {
         UploadedFile file = fileRepo.findByFilename(filename);
+        try {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .body(file.getContents());
+                .body(file.getContents().getBytes(1, (int)file.getContents().length()));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

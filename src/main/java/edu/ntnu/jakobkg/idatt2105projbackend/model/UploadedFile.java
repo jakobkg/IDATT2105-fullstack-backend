@@ -1,5 +1,7 @@
 package edu.ntnu.jakobkg.idatt2105projbackend.model;
 
+import java.sql.Blob;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +27,6 @@ public class UploadedFile {
     @Lob
     @Setter
     @Getter
-    private byte[] contents;
+    private Blob contents;
 
 }
