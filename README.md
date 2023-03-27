@@ -1,6 +1,12 @@
 # IDATT2105-fullstack-backend
 [Frontend here](https://github.com/jakobkg/IDATT2105-fullstack-frontend/)
 
+If all you're looking for is an overview of the API this app provides, see the following links:
+* Items: https://documenter.getpostman.com/view/26423805/2s93RQTZWe
+* Bookmarks: https://documenter.getpostman.com/view/26423805/2s93RQTZWg
+* Users: https://documenter.getpostman.com/view/26423805/2s93RQTZax
+* Categories: https://documenter.getpostman.com/view/26423805/2s93RQTZay
+
 ## Requirements
 * JDK 17 or a compatible version
 * Maven 3
