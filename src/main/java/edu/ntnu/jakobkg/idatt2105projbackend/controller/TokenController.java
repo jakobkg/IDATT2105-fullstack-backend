@@ -35,7 +35,7 @@ public class TokenController {
     
     public static final String secret = "superduperhemmelig"; // TODO: last fra environment variable
 
-    private static final String issuer_id = "Jakob, Sondre, Ingrid og Kasia AS";
+    private static final String issuer_id = "loftet.no";
 
     //  Every token is valid for one week before requiring users to re-authenticate
     private static final Duration TOKEN_VALIDITY = Duration.ofDays(7);
