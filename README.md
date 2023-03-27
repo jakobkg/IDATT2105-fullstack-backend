@@ -6,6 +6,7 @@ If all you're looking for is an overview of the API this app provides, see the f
 * Bookmarks: https://documenter.getpostman.com/view/26423805/2s93RQTZWg
 * Users: https://documenter.getpostman.com/view/26423805/2s93RQTZax
 * Categories: https://documenter.getpostman.com/view/26423805/2s93RQTZay
+* Files: https://documenter.getpostman.com/view/26423805/2s93RQTZtb
 
 ## Requirements
 * JDK 17 or a compatible version
