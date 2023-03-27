@@ -56,4 +56,19 @@ public class CategoryControllerTest {
         assertDoesNotThrow(() -> categoryController.getCategory(1));
     }
 
+    @Test
+    public void getCategoryNameReturnsCorrectName() {
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(testCategory));
+        assertEquals(categoryController.getCategory(1).getCategoryName(),"Testkategori");
+    }
+
+    @Test
+    public void updateCategoryReturnsNewName() {
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(testCategory));
+        when(categoryRepository.findById(2)).thenReturn(Optional.of(new Category("NyttNavn")));
+
+        categoryController.updateCategoryName(categoryController.getCategory(2),1);
+        assertEquals(categoryController.getCategory(1).getCategoryName(),"NyttNavn");
+    }
+
 }
