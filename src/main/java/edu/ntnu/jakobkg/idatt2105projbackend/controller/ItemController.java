@@ -111,6 +111,7 @@ public class ItemController {
 
         item.setTitle(request.title());
         item.setDescription(request.description());
+        item.setLocation(request.location());
         item.setLatitude(request.latitude());
         item.setLongitude(request.longitude());
         item.setPrice(request.price());
