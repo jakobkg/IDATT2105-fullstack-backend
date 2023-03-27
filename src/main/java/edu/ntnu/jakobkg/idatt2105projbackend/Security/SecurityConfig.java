@@ -86,6 +86,14 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/bookmark").authenticated()
                 .requestMatchers(HttpMethod.GET, "/bookmark/*").authenticated()
 
+                ////////////////////////
+                //   FILE ENDPOINTS   //
+                ////////////////////////
+
+                .requestMatchers(HttpMethod.GET, "/files").permitAll()
+                .requestMatchers(HttpMethod.GET, "/files/*").permitAll()
+                .requestMatchers(HttpMethod.POST, "/files").permitAll()
+
                 .anyRequest().authenticated().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilterBefore(new AuthFilter(), UsernamePasswordAuthenticationFilter.class);
