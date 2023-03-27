@@ -2,6 +2,7 @@ package edu.ntnu.jakobkg.idatt2105projbackend.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -170,5 +171,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
