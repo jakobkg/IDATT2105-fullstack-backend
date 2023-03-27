@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -37,12 +38,6 @@ public class UserControllerTest {
     User testUser = new User("Testbruker", "Testmann", "test@test.no", "test", "test", 1234, "Testeby");
 
 
-    @BeforeEach
-    void setup() {
-        testUser = new User("Testbruker", "Testmann", "test@test.no", "test", "test", 1234, "Testeby");
-    }
-
-
     @Test
     public void saveUserWorks() {
         when(userRepository.save(testUser)).thenReturn(new User());
@@ -55,5 +50,9 @@ public class UserControllerTest {
         assertEquals(testUser, userController.getUser(1));
     }
 
-
+    @Test(expected = ResponseStatusException.class)
+    public void getUserNegative() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(testUser));
+        assertEquals(testUser, userController.getUser(2));
+    }
 }
