@@ -92,22 +92,16 @@ public class BookmarkController {
      * @return the bookmark if it exists, else HTTP code 404
      */
     @GetMapping(path = "/{itemId}")
-    public @ResponseBody Bookmark isBookmarked(@RequestHeader("Authorization") String token, @PathVariable int itemId) {
+    public @ResponseBody boolean isBookmarked(@RequestHeader("Authorization") String token, @PathVariable int itemId) {
         // Authentication
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedinUser = userRepo.findByEmail(authenticatedUsername).orElseThrow();
-        int userId = loggedinUser.getId();
 
         Item chosenItem = itemRepository.findById(itemId).orElseThrow(() -> {
             return new ResponseStatusException(HttpStatus.NOT_FOUND);
         });
 
-        Bookmark bookmark = bookmarkRepository.findById(new BookmarkId(loggedinUser.getId(), chosenItem.getId())).orElseThrow(() -> {
-            logger.warn("Bookmark with userId: " + userId + " and itemId: " + itemId + " not found.");
-            return new ResponseStatusException(HttpStatus.NOT_FOUND);
-        });
-        logger.info("Bookmark with userId: " + userId + " and itemId: " + itemId + " found.");
-        return bookmark;
+        return bookmarkRepository.findById(new BookmarkId(loggedinUser.getId(), chosenItem.getId())).isPresent();
     }
 
     /**
